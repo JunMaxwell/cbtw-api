@@ -1,0 +1,1141 @@
+openapi: 3.0.0
+info:
+  title: HRM-CRUD
+  description: Provide CRUD operations as per User Story
+  contact:
+    name: Jun Maxwell
+    url: ""
+    email: haloany123@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+servers:
+- url: https://virtserver.swaggerhub.com/HALOANY123_1/HRM-TEST/1.0.0
+  description: SwaggerHub API Auto Mocking
+tags:
+- name: Employee
+  description: Operations for Employees
+- name: Dependent
+  description: Operations available for Dependents
+- name: Document
+  description: Operations for Legal Documents
+- name: Department
+  description: Operations for Departments
+- name: Employee-Dependent
+  description: Operations for working with both EmployeeID and DependentID
+paths:
+  /employees:
+    get:
+      tags:
+      - Employee
+      summary: Returns all Employee List
+      description: Fetch all Employee records
+      operationId: allEmployee
+      parameters:
+      - name: skip
+        in: query
+        description: number of records to skip for pagination
+        required: false
+        style: form
+        explode: true
+        schema:
+          minimum: 0
+          type: integer
+          format: int32
+      - name: limit
+        in: query
+        description: maximum number of records to return
+        required: false
+        style: form
+        explode: true
+        schema:
+          maximum: 50
+          minimum: 0
+          type: integer
+          format: int32
+      responses:
+        "200":
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmployeeRecord'
+                x-content-type: application/json
+        "400":
+          description: bad input parameter
+      x-swagger-router-controller: Employee
+    post:
+      tags:
+      - Employee
+      summary: Create new Employee
+      operationId: post-employees
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeRecord'
+            examples:
+              Example 1:
+                value:
+                  first_name: Henry
+                  last_name: Gerald
+                  dob: 1995-10-21
+                  email: Henry.Gerald@mail.com
+                  phone_number: +015-6213-3312
+                  address: 22 Jump Street
+                  title: Junior Developer
+                  department:
+                    id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                    name: IT
+                    description: Department of IT people mostly
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeRecord'
+      x-swagger-router-controller: Employee
+  /employees/{id}:
+    get:
+      tags:
+      - Employee
+      summary: Get Employee by ID
+      operationId: get-employees-id
+      parameters:
+      - name: id
+        in: path
+        description: Employee UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeRecord'
+      x-swagger-router-controller: Employee
+    put:
+      tags:
+      - Employee
+      summary: Update Employee
+      operationId: put-employees-id
+      parameters:
+      - name: id
+        in: path
+        description: Employee UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeRecord'
+            examples:
+              Example 1:
+                value:
+                  first_name: Jenny
+                  last_name: Doe
+                  dob: 1991-08-29
+                  email: john.doe@mail.com
+                  phone_number: +01-1566-884
+                  address: 23 Jump Street
+                  title: Middle Developer
+      responses:
+        default:
+          description: Default
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeRecord'
+      x-swagger-router-controller: Employee
+    delete:
+      tags:
+      - Employee
+      summary: Remove Employee
+      description: And remove all of this Employee's relationship with their dependent.
+      operationId: delete-employees-id
+      parameters:
+      - name: id
+        in: path
+        description: Employee UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+      x-swagger-router-controller: Employee
+    patch:
+      tags:
+      - Employee
+      summary: Update an existing Employee
+      description: ""
+      operationId: patch-employees-id
+      parameters:
+      - name: id
+        in: path
+        description: Employee UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+      responses:
+        "202":
+          description: Accepted
+      x-swagger-router-controller: Employee
+  /employees/{employeeId}/dependents:
+    get:
+      tags:
+      - Employee
+      - Dependent
+      summary: Get all Dependents of an Employee
+      description: Get all Dependents of an Employee using Employee ID
+      operationId: get-employees-employeeId-dependents
+      parameters:
+      - name: employeeId
+        in: path
+        description: Employee UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: dependentName
+        in: query
+        description: Dependent's name
+        required: false
+        style: form
+        explode: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DependentRecord'
+                x-content-type: application/json
+      x-swagger-router-controller: Employee
+    post:
+      tags:
+      - Employee
+      - Dependent
+      summary: Add dependents to an Employee
+      description: Add an array of dependents associated with an Employee
+      operationId: post-employees-employeeId-dependents
+      parameters:
+      - name: employeeId
+        in: path
+        description: Employee UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/DependentRecord'
+            examples:
+              Example 1:
+                value:
+                - first_name: Jane
+                  last_name: Doe
+                  phone: 408-867-5309
+                  relationship: Spouse
+                  dob: 1992-6-17
+                  email: user@example.com
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DependentRecord'
+                x-content-type: application/json
+      x-swagger-router-controller: Employee
+    delete:
+      tags:
+      - Employee
+      - Dependent
+      summary: Remove all Dependents of an Employee
+      operationId: delete-employees-employeeId-dependents
+      parameters:
+      - name: employeeId
+        in: path
+        description: Employee UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: No Content
+      x-swagger-router-controller: Employee
+  /dependents/{id}:
+    get:
+      tags:
+      - Dependent
+      summary: Get Dependent by dependent_id
+      operationId: get-dependents-dependentId
+      parameters:
+      - name: id
+        in: path
+        description: Dependent UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DependentRecord'
+      x-swagger-router-controller: Dependent
+    put:
+      tags:
+      - Dependent
+      summary: Update Dependent Details
+      operationId: put-dependents-dependentId
+      parameters:
+      - name: id
+        in: path
+        description: Dependent UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DependentRecord'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DependentRecord'
+      x-swagger-router-controller: Dependent
+    post:
+      tags:
+      - Dependent
+      summary: Add Dependent details
+      operationId: post-dependents-dependentId
+      parameters:
+      - name: id
+        in: path
+        description: Dependent UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DependentRecord'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DependentRecord'
+      x-swagger-router-controller: Dependent
+    patch:
+      tags:
+      - Dependent
+      summary: Update existing Dependent Details
+      operationId: patch-dependents-id
+      parameters:
+      - name: id
+        in: path
+        description: Dependent UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "202":
+          description: Accepted
+      x-swagger-router-controller: Dependent
+  /employees/{employeeId}/dependents/{dependentId}:
+    get:
+      tags:
+      - Employee-Dependent
+      summary: Get specific Dependent
+      description: Get specific dependent from Employee ID and Dependent ID
+      operationId: get-employees-employeeId-dependents-dependentId
+      parameters:
+      - name: employeeId
+        in: path
+        description: Employee UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: dependentId
+        in: path
+        description: Dependent UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DependentRecord'
+      x-swagger-router-controller: EmployeeDependent
+    put:
+      tags:
+      - Employee-Dependent
+      summary: Update specific Dependent
+      description: Update specific dependent from Employee ID and Dependent ID
+      operationId: put-employees-employeeId-dependents-dependentId
+      parameters:
+      - name: employeeId
+        in: path
+        description: Employee UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: dependentId
+        in: path
+        description: Dependent UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DependentRecord'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DependentRecord'
+      x-swagger-router-controller: EmployeeDependent
+    delete:
+      tags:
+      - Employee-Dependent
+      summary: Remove a Dependent from Employee
+      description: Remove a Dependent from Employee's Dependent List
+      operationId: delete-employees-employeeId-dependents-dependentId
+      parameters:
+      - name: employeeId
+        in: path
+        description: Employee UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: dependentId
+        in: path
+        description: Dependent UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: No Content
+      x-swagger-router-controller: EmployeeDependent
+    patch:
+      tags:
+      - Employee-Dependent
+      summary: Update existing Dependent of an Employee
+      description: "Update existing Dependent of an Employee.\r\nOnly accept if Both\
+        \ IDs are available"
+      operationId: patch-employees-employeeId-dependents-dependentId
+      parameters:
+      - name: employeeId
+        in: path
+        description: Employee UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: dependentId
+        in: path
+        description: Dependent UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "202":
+          description: Accepted
+      x-swagger-router-controller: EmployeeDependent
+  /documents:
+    get:
+      tags:
+      - Document
+      summary: Get All Documents
+      operationId: get-documents
+      responses:
+        default:
+          description: Default
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Document'
+                x-content-type: application/json
+      x-swagger-router-controller: Document
+  /documents/{id}:
+    get:
+      tags:
+      - Document
+      summary: Get Document by ID
+      operationId: get-documents-id
+      parameters:
+      - name: id
+        in: path
+        description: Document UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+      x-swagger-router-controller: Document
+    put:
+      tags:
+      - Document
+      summary: Update Document by ID
+      operationId: put-documents-id
+      parameters:
+      - name: id
+        in: path
+        description: Document UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Document'
+            examples:
+              Example 1:
+                value:
+                  name: Social Security Card
+                  type: National ID
+                  path: http://example.com
+                  uploaded_date: 2016-08-29T09:12:33.001Z
+                  owner_id: d290f1ee-6c54-4b01-90e6-d701748f0851
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+      x-swagger-router-controller: Document
+    patch:
+      tags:
+      - Document
+      - Employee
+      summary: Update existing Document
+      operationId: patch-documents-id
+      parameters:
+      - name: id
+        in: path
+        description: Document UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "202":
+          description: Accepted
+      x-swagger-router-controller: Document
+  /employees/{employeeId}/documents:
+    get:
+      tags:
+      - Document
+      - Employee
+      summary: Get All Document of Employee
+      description: Get All Document of Employee from Employee ID
+      operationId: get-employees-employeeId-documents
+      parameters:
+      - name: employeeId
+        in: path
+        description: Employee UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Document'
+                x-content-type: application/json
+      x-swagger-router-controller: Document
+    post:
+      tags:
+      - Document
+      - Employee
+      summary: Update Document details of Employee
+      description: Update a list of document details of an Employee using Employee
+        Id
+      operationId: post-employees-employeeId-documents
+      parameters:
+      - name: employeeId
+        in: path
+        description: Employee UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Document'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Document'
+                x-content-type: application/json
+      x-swagger-router-controller: Document
+    delete:
+      tags:
+      - Document
+      - Employee
+      summary: Remove a Document of an Employee
+      operationId: delete-employees-employeeId-documents
+      parameters:
+      - name: employeeId
+        in: path
+        description: Employee UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      - name: documentId
+        in: query
+        description: Document UUID
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "204":
+          description: No Content
+      x-swagger-router-controller: Document
+  /employees/{id}/department:
+    get:
+      tags:
+      - Employee
+      - Department
+      summary: Get Department of Employee
+      operationId: get-employees-id-department
+      parameters:
+      - name: id
+        in: path
+        description: Employee UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "2XX":
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+      x-swagger-router-controller: Employee
+    put:
+      tags:
+      - Department
+      - Employee
+      summary: Move employee to another Department
+      operationId: put-employees-id-department
+      parameters:
+      - name: id
+        in: path
+        description: Employee UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      - name: deptId
+        in: query
+        description: New Department UUID
+        required: true
+        style: form
+        explode: true
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "2XX":
+          description: Success
+      x-swagger-router-controller: Department
+  /departments:
+    get:
+      tags:
+      - Department
+      summary: Get all Department
+      operationId: get-departments
+      parameters: []
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Department'
+                x-content-type: application/json
+      x-swagger-router-controller: Department
+    post:
+      tags:
+      - Department
+      summary: Create new Department
+      operationId: post-departments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Department'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+      x-swagger-router-controller: Department
+  /department/{id}:
+    get:
+      tags:
+      - Department
+      summary: Get Department by ID
+      operationId: get-department-id
+      parameters:
+      - name: id
+        in: path
+        description: Department UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+      x-swagger-router-controller: Department
+    put:
+      tags:
+      - Department
+      summary: Update Department details
+      operationId: put-department-id
+      parameters:
+      - name: id
+        in: path
+        description: Department UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "202":
+          description: Accepted
+      x-swagger-router-controller: Department
+    delete:
+      tags:
+      - Department
+      summary: Remove a Department
+      operationId: delete-department-id
+      parameters:
+      - name: id
+        in: path
+        description: Department UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "204":
+          description: No Content
+      x-swagger-router-controller: Department
+    patch:
+      tags:
+      - Department
+      summary: Update existing Department
+      operationId: patch-department-id
+      parameters:
+      - name: id
+        in: path
+        description: Department UUID
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      responses:
+        "202":
+          description: Accepted
+      x-swagger-router-controller: Department
+components:
+  schemas:
+    EmployeeRecord:
+      title: ""
+      required:
+      - first_name
+      - id
+      - last_name
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        first_name:
+          type: string
+          example: John
+        last_name:
+          type: string
+          example: Doe
+        dob:
+          type: string
+          format: date
+          example: 1991-08-29
+        email:
+          type: string
+          format: email
+          example: john.doe@mail.com
+        phone_number:
+          type: string
+          example: +01-1566-884
+          x-stoplight:
+            id: vl62zks0deyu5
+        address:
+          type: string
+          example: 22 Jump Street
+          x-stoplight:
+            id: zh05d07lw8d7t
+        title:
+          type: string
+          example: Junior Developer
+          x-stoplight:
+            id: 3e03hzate8tju
+        department:
+          $ref: '#/components/schemas/Department'
+      description: Employee Schema
+      example:
+        address: 22 Jump Street
+        dob: 1991-08-29T00:00:00.000+00:00
+        last_name: Doe
+        phone_number: +01-1566-884
+        id: d290f1ee-6c54-4b01-90e6-d701748f0851
+        title: Junior Developer
+        department:
+          manager: null
+          name: IT
+          description: Department of IT people mostly
+          id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+        first_name: John
+        email: john.doe@mail.com
+      x-examples:
+        Example 1:
+          id: d290f1ee-6c54-4b01-90e6-d701748f0851
+          first_name: John
+          last_name: Doe
+          dob: 1991-08-29
+          email: john.doe@mail.com
+          phone_number: +01-1566-884
+          address: 22 Jump Street
+          title: Junior Developer
+          department:
+            id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+            name: IT
+            description: Department of IT people mostly
+    DependentRecord:
+      required:
+      - employee_id
+      - first_name
+      - id
+      - relationship
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+          x-stoplight:
+            id: l6qo9ghshyetv
+        first_name:
+          type: string
+          example: Jane
+        last_name:
+          type: string
+          example: Doe
+          x-stoplight:
+            id: ac8e1ilvcsvnu
+        phone:
+          type: string
+          example: 408-867-5309
+        employee_id:
+          $ref: '#/components/schemas/EmployeeRecord'
+        relationship:
+          type: string
+          enum:
+          - Spouse
+          - Parent
+          - Child
+          x-stoplight:
+            id: e5m5zxso0znrs
+        dob:
+          type: string
+          format: date
+          example: 1992-06-17
+          x-stoplight:
+            id: 87j1pyn1utolh
+        email:
+          type: string
+          format: email
+          x-stoplight:
+            id: bbo7jvqzbg9jj
+      description: Dependent to specific Employee
+      example:
+        phone: 408-867-5309
+        dob: 1992-06-17T00:00:00.000+00:00
+        employee_id:
+          address: 22 Jump Street
+          dob: 1991-08-29T00:00:00.000+00:00
+          last_name: Doe
+          phone_number: +01-1566-884
+          id: d290f1ee-6c54-4b01-90e6-d701748f0851
+          title: Junior Developer
+          department:
+            manager: null
+            name: IT
+            description: Department of IT people mostly
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          first_name: John
+          email: john.doe@mail.com
+        last_name: Doe
+        id: d290f1ee-6c54-4b01-90e6-d701748f0851
+        relationship: Spouse
+        first_name: Jane
+        email: ""
+      x-examples:
+        Example 1:
+          id: d290f1ee-6c54-4b01-90e6-d701748f0851
+          first_name: Jane
+          last_name: Doe
+          phone: 408-867-5309
+          employee_id:
+            id: d290f1ee-6c54-4b01-90e6-d701748f0851
+            first_name: John
+            last_name: Doe
+            dob: 1991-08-29
+            email: john.doe@mail.com
+            phone_number: +01-1566-884
+            address: 22 Jump Street
+            title: Junior Developer
+          relationship: Spouse
+          dob: 1992-6-17
+          email: user@example.com
+    Document:
+      title: Document
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        name:
+          type: string
+          example: Social Security Card
+          x-stoplight:
+            id: 8ujrp9xkxdr04
+        type:
+          type: string
+          example: National ID
+          x-stoplight:
+            id: 6rsctcj4djqom
+        path:
+          type: string
+          format: uri
+          x-stoplight:
+            id: 5t23uxtk5995z
+        uploaded_date:
+          type: string
+          format: date-time
+          example: 2016-08-29T09:12:33.001Z
+          x-stoplight:
+            id: xcypt32rp3jdb
+        owner_id:
+          $ref: '#/components/schemas/EmployeeRecord'
+      description: Legal Documents
+      example:
+        path: http://example.com/aeiou
+        owner_id:
+          address: 22 Jump Street
+          dob: 1991-08-29T00:00:00.000+00:00
+          last_name: Doe
+          phone_number: +01-1566-884
+          id: d290f1ee-6c54-4b01-90e6-d701748f0851
+          title: Junior Developer
+          department:
+            manager: null
+            name: IT
+            description: Department of IT people mostly
+            id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+          first_name: John
+          email: john.doe@mail.com
+        name: Social Security Card
+        uploaded_date: 2016-08-29T09:12:33.001Z
+        id: d290f1ee-6c54-4b01-90e6-d701748f0851
+        type: National ID
+      x-examples:
+        Example 1:
+          id: d290f1ee-6c54-4b01-90e6-d701748f0851
+          name: Social Security Card
+          type: National ID
+          path: http://example.com
+          uploaded_date: 2016-08-29T09:12:33.001Z
+          owner_id:
+            id: d290f1ee-6c54-4b01-90e6-d701748f0851
+            first_name: John
+            last_name: Doe
+            dob: 1991-08-29
+            email: john.doe@mail.com
+            phone_number: +01-1566-884
+            address: 22 Jump Street
+            title: Junior Developer
+    Department:
+      title: Department
+      required:
+      - id
+      - manager
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          example: IT
+          x-stoplight:
+            id: ez9dj69nx19d1
+        description:
+          type: string
+          example: Department of IT people mostly
+          x-stoplight:
+            id: k11f80srfjnue
+        manager:
+          $ref: '#/components/schemas/Manager'
+      description: Company's Department schema
+      example:
+        manager: null
+        name: IT
+        description: Department of IT people mostly
+        id: 046b6c7f-0b8a-43b9-b35d-6489e6daee91
+      x-examples:
+        Example 1:
+          id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+          name: IT
+          description: Department of IT people mostly
+    Manager:
+      $ref: '#/components/schemas/EmployeeRecord'
