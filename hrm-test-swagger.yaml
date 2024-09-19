@@ -513,7 +513,9 @@ paths:
       operationId: get-employees-id-department
     put:
       summary: Move employee to another Department
-      tags: [Department, Employee]
+      tags:
+        - Department
+        - Employee
       responses:
         2XX:
           description: Success
@@ -604,6 +606,38 @@ paths:
         '204':
           description: No Content
       operationId: delete-department-id
+  /employees/import:
+    post:
+      summary: Batch Import
+      tags: []
+      responses:
+        '202':
+          description: Accepted
+      operationId: post-employees-import
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                x-stoplight:
+                  id: yngf2xmxwf6o3
+                type: object
+                properties:
+                  employee:
+                    $ref: '#/components/schemas/EmployeeRecord'
+                  dependents:
+                    type: array
+                    x-stoplight:
+                      id: 1gmoipc21xlq9
+                    items:
+                      $ref: '#/components/schemas/DependentRecord'
+                  documents:
+                    type: array
+                    x-stoplight:
+                      id: 4if0csxrx9e7c
+                    items:
+                      $ref: '#/components/schemas/Document'
 components:
   schemas:
     EmployeeRecord:
