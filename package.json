@@ -1,6 +1,7 @@
 {
   "name": "hrm-crud",
   "version": "1.0.0",
+  "homepage": "https://junmaxwell.github.io/cbtw-api/",
   "description": "Provide CRUD operations as per User Story",
   "main": "index.js",
   "scripts": {
