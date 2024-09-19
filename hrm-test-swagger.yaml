@@ -1,0 +1,813 @@
+openapi: 3.0.0
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: 'https://virtserver.swaggerhub.com/HALOANY123_1/HRM-TEST/1.0.0'
+info:
+  description: Provide CRUD operations as per User Story
+  version: 1.0.0
+  title: HRM-CRUD
+  contact:
+    email: haloany123@gmail.com
+    url: ''
+    name: Jun Maxwell
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: Employee
+    description: Operations for Employees
+  - name: Dependent
+    description: Operations available for Dependents
+  - name: Document
+    description: Operations for Legal Documents
+  - name: Department
+    description: Operations for Departments
+  - name: Employee-Dependent
+    description: Operations for working with both EmployeeID and DependentID
+paths:
+  /employees:
+    get:
+      tags:
+        - Employee
+      summary: Returns all Employee List
+      operationId: allEmployee
+      description: Fetch all Employee records
+      parameters:
+        - in: query
+          name: skip
+          description: number of records to skip for pagination
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+        - in: query
+          name: limit
+          description: maximum number of records to return
+          schema:
+            type: integer
+            format: int32
+            minimum: 0
+            maximum: 50
+      responses:
+        '200':
+          description: search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/EmployeeRecord'
+        '400':
+          description: bad input parameter
+    post:
+      summary: Create new Employee
+      tags:
+        - Employee
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeRecord'
+      operationId: post-employees
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeRecord'
+            examples:
+              Example 1:
+                value:
+                  first_name: Henry
+                  last_name: Gerald
+                  dob: '1995-10-21'
+                  email: Henry.Gerald@mail.com
+                  phone_number: +015-6213-3312
+                  address: 22 Jump Street
+                  title: Junior Developer
+                  department:
+                    id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                    name: IT
+                    description: Department of IT people mostly
+  '/employees/{id}':
+    parameters:
+      - schema:
+          type: string
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        name: id
+        in: path
+        required: true
+        description: Employee UUID
+    get:
+      summary: Get Employee by ID
+      tags:
+        - Employee
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeRecord'
+      operationId: get-employees-id
+    put:
+      summary: Update Employee
+      tags:
+        - Employee
+      responses:
+        default:
+          description: Default
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeRecord'
+      operationId: put-employees-id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeRecord'
+            examples:
+              Example 1:
+                value:
+                  first_name: Jenny
+                  last_name: Doe
+                  dob: '1991-08-29'
+                  email: john.doe@mail.com
+                  phone_number: +01-1566-884
+                  address: 23 Jump Street
+                  title: Middle Developer
+    patch:
+      summary: Update an existing Employee
+      tags:
+        - Employee
+      responses:
+        '202':
+          description: Accepted
+      operationId: patch-employees-id
+      description: ''
+    delete:
+      summary: Remove Employee
+      tags:
+        - Employee
+      responses:
+        '204':
+          description: No Content
+        '404':
+          description: Not Found
+      operationId: delete-employees-id
+      description: And remove all of this Employee's relationship with their dependent.
+  '/employees/{employeeId}/dependents':
+    parameters:
+      - schema:
+          type: string
+        name: employeeId
+        in: path
+        required: true
+        description: Employee UUID
+    get:
+      summary: Get all Dependents of an Employee
+      tags:
+        - Employee
+        - Dependent
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DependentRecord'
+      operationId: get-employees-employeeId-dependents
+      parameters:
+        - schema:
+            type: string
+          in: query
+          name: dependentName
+          description: Dependent's name
+      description: Get all Dependents of an Employee using Employee ID
+    post:
+      summary: Add dependents to an Employee
+      tags:
+        - Employee
+        - Dependent
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DependentRecord'
+      operationId: post-employees-employeeId-dependents
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/DependentRecord'
+            examples:
+              Example 1:
+                value:
+                  - first_name: Jane
+                    last_name: Doe
+                    phone: 408-867-5309
+                    relationship: Spouse
+                    dob: '1992-6-17'
+                    email: user@example.com
+      parameters: []
+      description: Add an array of dependents associated with an Employee
+    delete:
+      summary: Remove all Dependents of an Employee
+      tags:
+        - Employee
+        - Dependent
+      responses:
+        '204':
+          description: No Content
+      operationId: delete-employees-employeeId-dependents
+  '/dependents/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+        description: Dependent UUID
+    get:
+      summary: Get Dependent by dependent_id
+      tags:
+        - Dependent
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DependentRecord'
+      operationId: get-dependents-dependentId
+    post:
+      summary: Add Dependent details
+      tags:
+        - Dependent
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DependentRecord'
+      operationId: post-dependents-dependentId
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DependentRecord'
+    put:
+      summary: Update Dependent Details
+      tags:
+        - Dependent
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DependentRecord'
+      operationId: put-dependents-dependentId
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DependentRecord'
+    patch:
+      summary: Update existing Dependent Details
+      tags:
+        - Dependent
+      responses:
+        '202':
+          description: Accepted
+      operationId: patch-dependents-id
+  '/employees/{employeeId}/dependents/{dependentId}':
+    parameters:
+      - schema:
+          type: string
+        name: employeeId
+        in: path
+        required: true
+        description: Employee UUID
+      - schema:
+          type: string
+        name: dependentId
+        in: path
+        required: true
+        description: Dependent UUID
+    get:
+      summary: Get specific Dependent
+      tags:
+        - Employee-Dependent
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DependentRecord'
+      operationId: get-employees-employeeId-dependents-dependentId
+      description: Get specific dependent from Employee ID and Dependent ID
+    put:
+      summary: Update specific Dependent
+      tags:
+        - Employee-Dependent
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DependentRecord'
+      operationId: put-employees-employeeId-dependents-dependentId
+      description: Update specific dependent from Employee ID and Dependent ID
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DependentRecord'
+    patch:
+      summary: Update existing Dependent of an Employee
+      tags:
+        - Employee-Dependent
+      responses:
+        '202':
+          description: Accepted
+      operationId: patch-employees-employeeId-dependents-dependentId
+      description: "Update existing Dependent of an Employee.\r\nOnly accept if Both IDs are available"
+    delete:
+      summary: Remove a Dependent from Employee
+      tags:
+        - Employee-Dependent
+      responses:
+        '204':
+          description: No Content
+      operationId: delete-employees-employeeId-dependents-dependentId
+      description: Remove a Dependent from Employee's Dependent List
+  /documents:
+    get:
+      summary: Get All Documents
+      tags:
+        - Document
+      responses:
+        default:
+          description: Default
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Document'
+      operationId: get-documents
+  '/documents/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+        description: Document UUID
+    get:
+      summary: Get Document by ID
+      tags:
+        - Document
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+      operationId: get-documents-id
+    put:
+      summary: Update Document by ID
+      tags:
+        - Document
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+      operationId: put-documents-id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Document'
+            examples:
+              Example 1:
+                value:
+                  name: Social Security Card
+                  type: National ID
+                  path: 'http://example.com'
+                  uploaded_date: '2016-08-29T09:12:33.001Z'
+                  owner_id: d290f1ee-6c54-4b01-90e6-d701748f0851
+    patch:
+      summary: Update existing Document
+      tags:
+        - Document
+        - Employee
+      responses:
+        '202':
+          description: Accepted
+      operationId: patch-documents-id
+  '/employees/{employeeId}/documents':
+    parameters:
+      - schema:
+          type: string
+        name: employeeId
+        in: path
+        required: true
+        description: Employee UUID
+    get:
+      summary: Get All Document of Employee
+      tags:
+        - Document
+        - Employee
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Document'
+      operationId: get-employees-employeeId-documents
+      description: Get All Document of Employee from Employee ID
+    post:
+      summary: Update Document details of Employee
+      tags:
+        - Document
+        - Employee
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Document'
+      operationId: post-employees-employeeId-documents
+      description: Update a list of document details of an Employee using Employee Id
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Document'
+    delete:
+      summary: Remove a Document of an Employee
+      tags:
+        - Document
+        - Employee
+      responses:
+        '204':
+          description: No Content
+      operationId: delete-employees-employeeId-documents
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+          in: query
+          name: documentId
+          required: true
+          description: Document UUID
+  '/employees/{id}/department':
+    parameters:
+      - schema:
+          type: string
+          format: uuid
+        name: id
+        in: path
+        required: true
+        description: Employee UUID
+    get:
+      summary: Get Department of Employee
+      tags:
+        - Employee
+        - Department
+      responses:
+        2XX:
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+      operationId: get-employees-id-department
+    put:
+      summary: Move employee to another Department
+      tags: [Department, Employee]
+      responses:
+        2XX:
+          description: Success
+      operationId: put-employees-id-department
+      parameters:
+        - schema:
+            type: string
+            format: uuid
+          in: query
+          name: deptId
+          description: New Department UUID
+          required: true
+  /departments:
+    get:
+      summary: Get all Department
+      tags:
+        - Department
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Department'
+      operationId: get-departments
+      parameters: []
+    post:
+      summary: Create new Department
+      tags:
+        - Department
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+      operationId: post-departments
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Department'
+  '/department/{id}':
+    parameters:
+      - schema:
+          type: string
+        name: id
+        in: path
+        required: true
+        description: Department UUID
+    get:
+      summary: Get Department by ID
+      tags:
+        - Department
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+      operationId: get-department-id
+      parameters: []
+    put:
+      summary: Update Department details
+      tags:
+        - Department
+      responses:
+        '202':
+          description: Accepted
+      operationId: put-department-id
+    patch:
+      summary: Update existing Department
+      tags:
+        - Department
+      responses:
+        '202':
+          description: Accepted
+      operationId: patch-department-id
+    delete:
+      summary: Remove a Department
+      tags:
+        - Department
+      responses:
+        '204':
+          description: No Content
+      operationId: delete-department-id
+components:
+  schemas:
+    EmployeeRecord:
+      type: object
+      x-examples:
+        Example 1:
+          id: d290f1ee-6c54-4b01-90e6-d701748f0851
+          first_name: John
+          last_name: Doe
+          dob: '1991-08-29'
+          email: john.doe@mail.com
+          phone_number: +01-1566-884
+          address: 22 Jump Street
+          title: Junior Developer
+          department:
+            id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+            name: IT
+            description: Department of IT people mostly
+      required:
+        - id
+        - first_name
+        - last_name
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+          readOnly: true
+        first_name:
+          type: string
+          example: John
+        last_name:
+          type: string
+          example: Doe
+        dob:
+          type: string
+          format: date
+          example: '1991-08-29'
+        email:
+          type: string
+          format: email
+          example: john.doe@mail.com
+        phone_number:
+          type: string
+          x-stoplight:
+            id: vl62zks0deyu5
+          example: +01-1566-884
+        address:
+          type: string
+          x-stoplight:
+            id: zh05d07lw8d7t
+          example: 22 Jump Street
+        title:
+          type: string
+          x-stoplight:
+            id: 3e03hzate8tju
+          example: Junior Developer
+        department:
+          $ref: '#/components/schemas/Department'
+      title: ''
+      description: Employee Schema
+    DependentRecord:
+      type: object
+      x-examples:
+        Example 1:
+          id: d290f1ee-6c54-4b01-90e6-d701748f0851
+          first_name: Jane
+          last_name: Doe
+          phone: 408-867-5309
+          employee_id:
+            id: d290f1ee-6c54-4b01-90e6-d701748f0851
+            first_name: John
+            last_name: Doe
+            dob: '1991-08-29'
+            email: john.doe@mail.com
+            phone_number: +01-1566-884
+            address: 22 Jump Street
+            title: Junior Developer
+          relationship: Spouse
+          dob: '1992-6-17'
+          email: user@example.com
+      required:
+        - id
+        - first_name
+        - employee_id
+        - relationship
+      properties:
+        id:
+          type: string
+          x-stoplight:
+            id: l6qo9ghshyetv
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+          readOnly: true
+        first_name:
+          type: string
+          example: Jane
+        last_name:
+          type: string
+          x-stoplight:
+            id: ac8e1ilvcsvnu
+          example: Doe
+        phone:
+          type: string
+          example: 408-867-5309
+        employee_id:
+          $ref: '#/components/schemas/EmployeeRecord'
+        relationship:
+          type: string
+          enum:
+            - Spouse
+            - Parent
+            - Child
+          x-stoplight:
+            id: e5m5zxso0znrs
+        dob:
+          type: string
+          x-stoplight:
+            id: 87j1pyn1utolh
+          format: date
+          example: '1992-6-17'
+        email:
+          type: string
+          x-stoplight:
+            id: bbo7jvqzbg9jj
+          format: email
+      description: Dependent to specific Employee
+    Document:
+      title: Document
+      type: object
+      x-examples:
+        Example 1:
+          id: d290f1ee-6c54-4b01-90e6-d701748f0851
+          name: Social Security Card
+          type: National ID
+          path: 'http://example.com'
+          uploaded_date: '2016-08-29T09:12:33.001Z'
+          owner_id:
+            id: d290f1ee-6c54-4b01-90e6-d701748f0851
+            first_name: John
+            last_name: Doe
+            dob: '1991-08-29'
+            email: john.doe@mail.com
+            phone_number: +01-1566-884
+            address: 22 Jump Street
+            title: Junior Developer
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+          readOnly: true
+        name:
+          type: string
+          x-stoplight:
+            id: 8ujrp9xkxdr04
+          example: Social Security Card
+        type:
+          x-stoplight:
+            id: 6rsctcj4djqom
+          type: string
+          example: National ID
+        path:
+          type: string
+          x-stoplight:
+            id: 5t23uxtk5995z
+          format: uri
+        uploaded_date:
+          type: string
+          x-stoplight:
+            id: xcypt32rp3jdb
+          format: date-time
+          example: '2016-08-29T09:12:33.001Z'
+        owner_id:
+          $ref: '#/components/schemas/EmployeeRecord'
+      description: Legal Documents
+    Department:
+      title: Department
+      type: object
+      x-examples:
+        Example 1:
+          id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+          name: IT
+          description: Department of IT people mostly
+      description: Company's Department schema
+      required:
+        - id
+        - manager
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        name:
+          type: string
+          x-stoplight:
+            id: ez9dj69nx19d1
+          example: IT
+        description:
+          type: string
+          x-stoplight:
+            id: k11f80srfjnue
+          example: Department of IT people mostly
+        manager:
+          $ref: '#/components/schemas/Manager'
+    Manager:
+      $ref: '#/components/schemas/EmployeeRecord'
