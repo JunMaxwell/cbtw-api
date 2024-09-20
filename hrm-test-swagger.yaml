@@ -203,6 +203,13 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/DependentRecord'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BadDependentRequest'
+              examples: {}
       operationId: post-employees-employeeId-dependents
       requestBody:
         content:
@@ -262,12 +269,38 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DependentRecord'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    x-stoplight:
+                      id: 3oyzgzlsrp10m
+                    default: BadRequestException
+                  message:
+                    type: string
+                    x-stoplight:
+                      id: 2mtd535beo11i
       operationId: post-dependents-dependentId
       requestBody:
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/DependentRecord'
+            examples:
+              Example 1:
+                value:
+                  first_name: Jane
+                  last_name: Doe
+                  phone: 408-867-5309
+                  employee_id: d290f1ee-6c54-4b01-90e6-d701748f0851
+                  relationship: Spouse
+                  dob: '1992-6-17'
+                  email: user@example.com
     put:
       summary: Update Dependent Details
       tags:
@@ -944,3 +977,26 @@ components:
               type: string
               x-stoplight:
                 id: d03d3qeuc8d6y
+    BadDependentRequest:
+      title: BadDependentRequest
+      type: object
+      x-examples:
+        Max Parents:
+          error: BadRequestException
+          message: This employee already has the maximum of 4 parents.
+        Max Spouse:
+          error: BadRequestException
+          message: This employee already has a spouse.
+        Dependent list has too many parents:
+          error: BadRequestException
+          message: This employee can only have a maximum of 4 parents.
+      properties:
+        error:
+          default: BadRequestException
+          enum:
+            - BadRequestException
+        message:
+          type: string
+          x-stoplight:
+            id: ddg548ifq9vup
+          example: This employee already has a spouse.
