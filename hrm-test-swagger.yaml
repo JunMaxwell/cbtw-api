@@ -613,6 +613,31 @@ paths:
       responses:
         '202':
           description: Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+              examples:
+                Example 1:
+                  value:
+                    id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                    status: IN_PROGRESS
+                    progress: 20
+                    errors: {}
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+              examples:
+                Example 1:
+                  value:
+                    id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                    status: IN_PROGRESS
+                    progress: 0
+                    errors:
+                      message: 'BAD REQUEST, SOMETHING''S WRONG'
       operationId: post-employees-import
       requestBody:
         content:
@@ -638,6 +663,21 @@ paths:
                       id: 4if0csxrx9e7c
                     items:
                       $ref: '#/components/schemas/Document'
+  '/employees/import/status/{jobId}':
+    parameters:
+      - schema:
+          type: string
+        name: jobId
+        in: path
+        required: true
+        description: ID of Import Job
+    get:
+      summary: Get Import Job Status
+      tags: []
+      responses:
+        '200':
+          description: OK
+      operationId: get-employees-import-status-jobId
 components:
   schemas:
     EmployeeRecord:
@@ -845,3 +885,33 @@ components:
           $ref: '#/components/schemas/Manager'
     Manager:
       $ref: '#/components/schemas/EmployeeRecord'
+    Job:
+      title: Job
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          x-stoplight:
+            id: 7wtj6dmr0tel9
+          enum:
+            - IN_PROGRESS
+            - DONE
+            - FAILED
+            - WARNING
+        progress:
+          type: number
+          x-stoplight:
+            id: othaypndxja9o
+          minimum: 0
+          maximum: 100
+        errors:
+          type: object
+          x-stoplight:
+            id: o5z0kndykahuj
+          properties:
+            message:
+              type: string
+              x-stoplight:
+                id: d03d3qeuc8d6y
