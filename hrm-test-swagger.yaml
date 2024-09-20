@@ -638,6 +638,20 @@ paths:
                     progress: 0
                     errors:
                       message: 'BAD REQUEST, SOMETHING''S WRONG'
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+              examples:
+                Example 1:
+                  value:
+                    id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                    status: FAILED
+                    progress: 0
+                    errors:
+                      message: No employee with ID ag15754-ggf1-4d11-bmx6jt8dxm12 found
       operationId: post-employees-import
       requestBody:
         content:
@@ -677,6 +691,21 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Job'
+              examples:
+                Example 1:
+                  value:
+                    id: 497f6eca-6276-4993-bfeb-53cbbbba6f08
+                    status: IN_PROGRESS
+                    progress: 30
+                    errors: {}
+        '400':
+          description: Bad Request
+        '404':
+          description: Not Found
       operationId: get-employees-import-status-jobId
 components:
   schemas:
